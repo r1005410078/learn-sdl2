@@ -5,6 +5,7 @@
     "*.wxs": "javascript",
     "display.h": "c",
     "sdl.h": "c",
-    "vector.h": "c"
+    "vector.h": "c",
+    "__locale": "c"
   }
 }

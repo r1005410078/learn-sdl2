@@ -6,6 +6,8 @@
     "display.h": "c",
     "sdl.h": "c",
     "vector.h": "c",
-    "__locale": "c"
+    "__locale": "c",
+    "mesh.h": "c",
+    "triangle.h": "c"
   }
 }

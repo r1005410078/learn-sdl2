@@ -1,4 +1,13 @@
 #include "mesh.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "array.h"
+
+mesh_t mesh = {
+    .vertices = NULL,
+    .faces = NULL,
+    .rotation = {0, 0, 0}};
 
 vec3_t mesh_vertices[N_NESH_VERTICES] = {
     {.x = -1, .y = -1, .z = -1}, // 1
@@ -30,3 +39,47 @@ face_t mesh_faces[N_MESH_FACES] = {
     // bottom
     {.a = 6, .b = 8, .c = 1},
     {.a = 6, .b = 1, .c = 4}};
+
+void load_obj_file_data(char *filename)
+{
+    FILE *file = fopen(filename, "r");
+
+    if (!file)
+    {
+        fprintf(stderr, "Failed to open file: %s\n", filename);
+        exit(1);
+    }
+
+    char line[1024];
+
+    while (fgets(line, 1024, file))
+    {
+        if (strncmp(line, "v ", 2) == 0)
+        {
+            vec3_t vertex;
+            sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+            array_push(mesh.vertices, vertex);
+        }
+
+        if (strncmp(line, "f ", 2) == 0)
+        {
+            int vertex_indices[3];
+            int texture_indices[3];
+            int normal_indices[3];
+
+            sscanf(
+                line,
+                "f %d/%d/%d %d/%d/%d %d/%d/%d",
+                &vertex_indices[0], &texture_indices[0], &normal_indices[0],
+                &vertex_indices[1], &texture_indices[1], &normal_indices[1],
+                &vertex_indices[2], &texture_indices[2], &normal_indices[2]);
+
+            face_t face = {
+                .a = vertex_indices[0],
+                .b = vertex_indices[1],
+                .c = vertex_indices[2]};
+
+            array_push(mesh.faces, face);
+        }
+    }
+}

@@ -8,6 +8,12 @@
     "vector.h": "c",
     "__locale": "c",
     "mesh.h": "c",
-    "triangle.h": "c"
+    "triangle.h": "c",
+    "__bit_reference": "c",
+    "bitset": "c",
+    "stdio.h": "c",
+    "string.h": "c",
+    "array.h": "c",
+    "stdlib.h": "c"
   }
 }

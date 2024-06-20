@@ -21,6 +21,8 @@ void draw_grid(void);
 void draw_pixel(u_int32_t x, u_int32_t y, u_int32_t color);
 void clear_color_buffer(u_int32_t color);
 void draw_rect(u_int32_t x, u_int32_t y, u_int32_t w, u_int32_t h, u_int32_t color);
+void draw_line(u_int32_t x0, u_int32_t y0, u_int32_t x1, u_int32_t y1, u_int32_t color);
+void draw_triangle(u_int32_t x0, u_int32_t y0, u_int32_t x1, u_int32_t y1, u_int32_t x2, u_int32_t y2, u_int32_t color);
 void destroy_window(void);
 
 #endif

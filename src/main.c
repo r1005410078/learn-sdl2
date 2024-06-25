@@ -6,7 +6,7 @@
 triangle_t *triangle_to_render;
 
 // 摄像机的位置
-vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
+vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 
 float fov_factor = 640;
 
@@ -72,22 +72,54 @@ void update(void)
 
     triangle_t project_triangle;
 
+    vec3_t transformed_vertexes[0];
+
     for (int j = 0; j < 3; j++)
     {
       vec3_t transformed_vertex = face_vertices[j];
 
-      // transformed_vertex = vec3_t_rotate_x(transformed_vertex, mesh.rotation.x);
+      transformed_vertex = vec3_t_rotate_x(transformed_vertex, mesh.rotation.x);
       transformed_vertex = vec3_t_rotate_y(transformed_vertex, mesh.rotation.y);
-      // transformed_vertex = vec3_t_rotate_z(transformed_vertex, mesh.rotation.z);
+      transformed_vertex = vec3_t_rotate_z(transformed_vertex, mesh.rotation.z);
 
-      transformed_vertex.z -= camera_position.z;
+      transformed_vertex.z += 5;
 
+      transformed_vertexes[j] = transformed_vertex;
+    }
+
+    ///    A
+    ///  /   \
+    /// B     C
+    vec3_t vector_a = transformed_vertexes[0];
+    vec3_t vector_b = transformed_vertexes[1];
+    vec3_t vector_c = transformed_vertexes[2];
+
+    vec3_t vector_ab = vec3_sub(vector_b, vector_a);
+    vec3_t vector_ac = vec3_sub(vector_c, vector_a);
+
+    normalize_vec3(&vector_ab);
+    normalize_vec3(&vector_ac);
+
+    vec3_t normal = vec3_cross(vector_ab, vector_ac);
+
+    normalize_vec3(&normal);
+
+    vec3_t dot_normal_camera = vec3_sub(camera_position, vector_a);
+
+    if (vec3_dot(normal, dot_normal_camera) < 0)
+    {
+      continue;
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+      vec3_t transformed_vertex = transformed_vertexes[i];
       vec2_t project_point = project(transformed_vertex);
 
       project_point.x += window_width / 2;
       project_point.y += window_height / 2;
 
-      project_triangle.points[j] = project_point;
+      project_triangle.points[i] = project_point;
     }
 
     array_push(triangle_to_render, project_triangle);
@@ -103,6 +135,15 @@ void render(void)
   {
     triangle_t triangle = triangle_to_render[i];
 
+    draw_filled_triangle(
+        triangle.points[0].x,
+        triangle.points[0].y,
+        triangle.points[1].x,
+        triangle.points[1].y,
+        triangle.points[2].x,
+        triangle.points[2].y,
+        0xFFFFFFFF);
+
     draw_triangle(
         triangle.points[0].x,
         triangle.points[0].y,
@@ -110,12 +151,14 @@ void render(void)
         triangle.points[1].y,
         triangle.points[2].x,
         triangle.points[2].y,
-        0xFF00FF00);
+        0xFF000000);
 
     draw_rect(triangle.points[0].x, triangle.points[0].y, 3, 3, 0xFF00FF00);
     draw_rect(triangle.points[1].x, triangle.points[1].y, 3, 3, 0xFF00FF00);
     draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, 0xFF00FF00);
   }
+
+  // draw_filled_triangle(300, 100, 50, 400, 500, 700, 0xFF00FF00);
 
   array_free(triangle_to_render);
 
@@ -134,7 +177,7 @@ void setup(void)
       window_width,
       window_height);
 
-  load_obj_file_data("./src/assets/monkey.obj");
+  load_obj_file_data("./src/assets/cube.obj");
 }
 
 int main(void)

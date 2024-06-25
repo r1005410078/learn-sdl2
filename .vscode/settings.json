@@ -14,6 +14,7 @@
     "stdio.h": "c",
     "string.h": "c",
     "array.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "stdbool.h": "c"
   }
 }

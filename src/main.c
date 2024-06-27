@@ -101,9 +101,7 @@ void update(void)
     face_vertices[1] = mesh.vertices[mesh_face.b - 1];
     face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
-    triangle_t project_triangle;
-
-    vec3_t transformed_vertexes[0];
+    vec3_t transformed_vertexes[3];
 
     for (int j = 0; j < 3; j++)
     {
@@ -145,18 +143,41 @@ void update(void)
       }
     }
 
+    vec2_t project_points[3];
+
     for (int i = 0; i < 3; i++)
     {
       vec3_t transformed_vertex = transformed_vertexes[i];
-      vec2_t project_point = project(transformed_vertex);
-
-      project_point.x += window_width / 2;
-      project_point.y += window_height / 2;
-
-      project_triangle.points[i] = project_point;
+      project_points[i] = project(transformed_vertex);
+      project_points[i].x += window_width / 2;
+      project_points[i].y += window_height / 2;
     }
 
+    float avg_depth = (project_points[0].y + project_points[1].y + project_points[2].y) / 3.0;
+
+    triangle_t project_triangle = {
+        .points = {
+            {project_points[0].x, project_points[0].y},
+            {project_points[1].x, project_points[1].y},
+            {project_points[2].x, project_points[2].y}},
+        .color = mesh_face.color,
+        .avg_depth = avg_depth};
+
     array_push(triangle_to_render, project_triangle);
+  }
+
+  int num_triangles = array_length(triangle_to_render);
+  for (int i = 0; i < num_triangles; i++)
+  {
+    for (int j = i; j < num_triangles; j++)
+    {
+      if (triangle_to_render[i].avg_depth < triangle_to_render[j].avg_depth)
+      {
+        triangle_t tmp = triangle_to_render[i];
+        triangle_to_render[i] = triangle_to_render[j];
+        triangle_to_render[j] = tmp;
+      }
+    }
   }
 }
 
@@ -164,8 +185,8 @@ void render(void)
 {
   draw_grid();
 
-  size_t triangle_count = array_length(triangle_to_render);
-  for (size_t i = 0; i < triangle_count; i++)
+  int triangle_count = array_length(triangle_to_render);
+  for (int i = 0; i < triangle_count; i++)
   {
     triangle_t triangle = triangle_to_render[i];
 
@@ -178,7 +199,7 @@ void render(void)
           triangle.points[1].y,
           triangle.points[2].x,
           triangle.points[2].y,
-          0xFF555555);
+          triangle.color);
     }
 
     if (render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX || render_method == RENDER_FILL_TRIANGLE_WIRE)
@@ -223,7 +244,8 @@ void setup(void)
       window_width,
       window_height);
 
-  load_obj_file_data("./src/assets/cube.obj");
+  // load_obj_file_data("./src/assets/cube.obj");
+  load_cube_mesh_data();
 }
 
 int main(void)

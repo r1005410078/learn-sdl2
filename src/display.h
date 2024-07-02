@@ -19,6 +19,8 @@ enum render_method
   RENDER_WIRE_VERTEX,
   RENDER_FILL_TRIANGLE,
   RENDER_FILL_TRIANGLE_WIRE,
+  RENDER_TEXTURED,
+  RENDER_TEXTURED_WIRE
 } render_method;
 
 extern SDL_Window *window;
@@ -36,7 +38,7 @@ void draw_pixel(u_int32_t x, u_int32_t y, u_int32_t color);
 void clear_color_buffer(u_int32_t color);
 void draw_rect(u_int32_t x, u_int32_t y, u_int32_t w, u_int32_t h, u_int32_t color);
 void draw_line(u_int32_t x0, u_int32_t y0, u_int32_t x1, u_int32_t y1, u_int32_t color);
-void draw_triangle(u_int32_t x0, u_int32_t y0, u_int32_t x1, u_int32_t y1, u_int32_t x2, u_int32_t y2, u_int32_t color);
+void draw_triangle(u_int32_t x0, u_int32_t y0, u_int32_t x1, u_int32_t y1, u_int32_t x2, u_int32_t y2, u_int32_t texture);
 void destroy_window(void);
 
 #endif

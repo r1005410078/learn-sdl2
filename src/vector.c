@@ -136,6 +136,18 @@ vec3_t vec3_t_rotate_z(vec3_t vec, float angle)
   return rotate_vector;
 }
 
+vec4_t vec4_from_vec3(vec3_t v)
+{
+  vec4_t v4 = {.x = v.x, .y = v.y, .z = v.z, .w = 1.0f};
+  return v4;
+}
+
+vec3_t vec3_from_vec4(vec4_t v)
+{
+  vec3_t v3 = {.x = v.x, .y = v.y, .z = v.z};
+  return v3;
+}
+
 float vec2_length(vec2_t v)
 {
   return sqrt(v.x * v.x + v.y * v.y);

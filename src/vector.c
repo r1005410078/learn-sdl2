@@ -148,6 +148,15 @@ vec3_t vec3_from_vec4(vec4_t v)
   return v3;
 }
 
+vec2_t vec2_from_vec4(vec4_t v)
+{
+  vec2_t v2 = {
+      .x = v.x,
+      .y = v.y,
+  };
+  return v2;
+}
+
 float vec2_length(vec2_t v)
 {
   return sqrt(v.x * v.x + v.y * v.y);

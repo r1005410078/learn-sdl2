@@ -95,39 +95,56 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32
   }
 }
 
-void draw_texel(int x, int y, uint8_t *texture, vec2_t point_a, vec2_t point_b, vec2_t point_c, float u0, float v0, float u1, float v1, float u2, float v2)
+void draw_texel(
+    int x, int y, uint8_t *texture,
+    vec4_t point_a, vec4_t point_b, vec4_t point_c,
+    float u0, float v0, float u1, float v1, float u2, float v2)
 {
   vec2_t point_p = {x, y};
 
-  vec3_t weights = barycentric_weights(point_a, point_b, point_c, point_p);
+  vec2_t a = vec2_from_vec4(point_a);
+  vec2_t b = vec2_from_vec4(point_b);
+  vec2_t c = vec2_from_vec4(point_c);
+
+  vec3_t weights = barycentric_weights(a, b, c, point_p);
 
   float alpha = weights.x;
   float beta = weights.y;
   float gamma = weights.z;
 
-  float interpolated_u = (u0)*alpha + (u1)*beta + (u2)*gamma;
-  float interpolated_v = (v0)*alpha + (v1)*beta + (v2)*gamma;
+  float interpolated_u;
+  float interpolated_v;
+  float interpolated_reciprocal_w;
+
+  interpolated_u = (u0 / point_a.w) * alpha + (u1 / point_b.w) * beta + (u2 / point_c.w) * gamma;
+  interpolated_v = (v0 / point_a.w) * alpha + (v1 / point_b.w) * beta + (v2 / point_c.w) * gamma;
+
+  interpolated_reciprocal_w = (1.0 / point_a.w) * alpha + (1.0 / point_b.w) * beta + (1.0 / point_c.w) * gamma;
+
+  interpolated_u /= interpolated_reciprocal_w;
+  interpolated_v /= interpolated_reciprocal_w;
 
   int tex_x = abs((int)(interpolated_u * texture_width));
   int tex_y = abs((int)(interpolated_v * texture_height));
 
   int index = (texture_width * tex_y) + tex_x;
 
-  // if (index >= 5000 || index < 0)
-  // {
-  //   printf("tex_x: %d tex_y: %d index: %d alpha: %f beta: %f gamma: %f \n", tex_x, tex_y, index, alpha, beta, gamma);
-  // }
-
   draw_pixel(x, y, texture[index]);
 }
 
-void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, uint8_t *texture)
+void draw_textured_triangle(
+    int x0, int y0, float z0, float w0, float u0, float v0,
+    int x1, int y1, float z1, float w1, float u1, float v1,
+    int x2, int y2, float z2, float w2, float u2, float v2,
+    uint8_t *texture)
 {
   // TODO
   if (y0 > y1)
   {
     int_swap(&y0, &y1);
     int_swap(&x0, &x1);
+    float_swap(&z0, &z1);
+    float_swap(&w0, &w1);
     float_swap(&u0, &u1);
     float_swap(&v0, &v1);
   }
@@ -136,6 +153,8 @@ void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, 
   {
     int_swap(&y1, &y2);
     int_swap(&x1, &x2);
+    float_swap(&z1, &z2);
+    float_swap(&w1, &w2);
     float_swap(&u1, &u2);
     float_swap(&v1, &v2);
   }
@@ -144,13 +163,15 @@ void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, 
   {
     int_swap(&y0, &y1);
     int_swap(&x0, &x1);
+    float_swap(&z0, &z1);
+    float_swap(&w0, &w1);
     float_swap(&u0, &u1);
     float_swap(&v0, &v1);
   }
 
-  vec2_t point_a = {x0, y0};
-  vec2_t point_b = {x1, y1};
-  vec2_t point_c = {x2, y2};
+  vec4_t point_a = {x0, y0, z0, w0};
+  vec4_t point_b = {x1, y1, z1, w1};
+  vec4_t point_c = {x2, y2, z2, w2};
 
   // flat-bottom
 

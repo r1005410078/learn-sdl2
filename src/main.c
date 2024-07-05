@@ -196,9 +196,9 @@ void update(void)
 
     triangle_t project_triangle = {
         .points = {
-            {project_points[0].x, project_points[0].y},
-            {project_points[1].x, project_points[1].y},
-            {project_points[2].x, project_points[2].y}},
+            {project_points[0].x, project_points[0].y, project_points[0].z, project_points[0].w},
+            {project_points[1].x, project_points[1].y, project_points[1].z, project_points[1].w},
+            {project_points[2].x, project_points[2].y, project_points[2].z, project_points[2].w}},
         .color = light_color,
         .texcoords = {{mesh_face.a_uv.u, mesh_face.a_uv.v}, {mesh_face.b_uv.u, mesh_face.b_uv.v}, {mesh_face.c_uv.u, mesh_face.c_uv.v}},
         .avg_depth = avg_depth};
@@ -248,14 +248,20 @@ void render(void)
       draw_textured_triangle(
           triangle.points[0].x,
           triangle.points[0].y,
+          triangle.points[0].z,
+          triangle.points[0].w,
           triangle.texcoords[0].u,
           triangle.texcoords[0].v,
           triangle.points[1].x,
           triangle.points[1].y,
+          triangle.points[1].z,
+          triangle.points[1].w,
           triangle.texcoords[1].u,
           triangle.texcoords[1].v,
           triangle.points[2].x,
           triangle.points[2].y,
+          triangle.points[2].z,
+          triangle.points[2].w,
           triangle.texcoords[2].u,
           triangle.texcoords[2].v,
           mesh_texture);

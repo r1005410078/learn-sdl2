@@ -98,7 +98,7 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32
 void draw_texel(
     int x, int y, uint8_t *texture,
     vec4_t point_a, vec4_t point_b, vec4_t point_c,
-    float u0, float v0, float u1, float v1, float u2, float v2)
+    tex2_t a_uv, tex2_t b_uv, tex2_t c_uv)
 {
   vec2_t point_p = {x, y};
 
@@ -116,8 +116,8 @@ void draw_texel(
   float interpolated_v;
   float interpolated_reciprocal_w;
 
-  interpolated_u = (u0 / point_a.w) * alpha + (u1 / point_b.w) * beta + (u2 / point_c.w) * gamma;
-  interpolated_v = (v0 / point_a.w) * alpha + (v1 / point_b.w) * beta + (v2 / point_c.w) * gamma;
+  interpolated_u = (a_uv.u / point_a.w) * alpha + (b_uv.u / point_b.w) * beta + (c_uv.u / point_c.w) * gamma;
+  interpolated_v = (a_uv.v / point_a.w) * alpha + (b_uv.v / point_b.w) * beta + (c_uv.v / point_c.w) * gamma;
 
   interpolated_reciprocal_w = (1.0 / point_a.w) * alpha + (1.0 / point_b.w) * beta + (1.0 / point_c.w) * gamma;
 
@@ -173,6 +173,10 @@ void draw_textured_triangle(
   vec4_t point_b = {x1, y1, z1, w1};
   vec4_t point_c = {x2, y2, z2, w2};
 
+  tex2_t a_uv = {u0, v0};
+  tex2_t b_uv = {u1, v1};
+  tex2_t c_uv = {u1, v1};
+
   // flat-bottom
 
   float inv_slope_1 = 0;
@@ -198,7 +202,7 @@ void draw_textured_triangle(
       for (int x = x_start; x < x_end; x++)
       {
         // draw_pixel(x, y, (x % 2 == 0) ? 0xFFFF00FF : 0xFF000000);
-        draw_texel(x, y, texture, point_a, point_b, point_c, u0, v0, u1, v1, u2, v2);
+        draw_texel(x, y, texture, point_a, point_b, point_c, a_uv, b_uv, c_uv);
       }
     }
   }
@@ -229,7 +233,7 @@ void draw_textured_triangle(
       for (int x = x_start; x < x_end; x++)
       {
         // draw_pixel(x, y, (x % 2 == 0) ? 0xFFFF00FF : 0xFF000000);
-        draw_texel(x, y, texture, point_a, point_b, point_c, u0, v0, u1, v1, u2, v2);
+        draw_texel(x, y, texture, point_a, point_b, point_c, a_uv, b_uv, c_uv);
       }
     }
   }
